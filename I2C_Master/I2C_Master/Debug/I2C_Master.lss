@@ -1,0 +1,311 @@
+
+I2C_Master.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000198  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  000001ec  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  000001ec  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000021c  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000048  00000000  00000000  00000258  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000894  00000000  00000000  000002a0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 000005df  00000000  00000000  00000b34  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000003ad  00000000  00000000  00001113  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000074  00000000  00000000  000014c0  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000359  00000000  00000000  00001534  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000236  00000000  00000000  0000188d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000038  00000000  00000000  00001ac3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 60 00 	call	0xc0	; 0xc0 <main>
+  64:	0c 94 ca 00 	jmp	0x194	; 0x194 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <I2C_init>:
+#define IN_PUT_PIN_0 0
+#define IN_PUT_PIN_1 1
+#define IN_PUT_PIN_2 2
+void I2C_init()
+{
+	TWBR=0X00;											//Clear the last one
+  6c:	10 b8       	out	0x00, r1	; 0
+	TWBR= 0x0c  ;                                  // BIT_RATE(TWSR);									//set 
+  6e:	8c e0       	ldi	r24, 0x0C	; 12
+  70:	80 b9       	out	0x00, r24	; 0
+  72:	08 95       	ret
+
+00000074 <I2C_Start>:
+	
+}
+void I2C_Start()
+{ //send start 
+	TWCR=(1<<TWINT)	|(1<<TWSTA)|(1<<TWEN);								//make flag =0,tw_Enable , init bit start @Control Res
+  74:	84 ea       	ldi	r24, 0xA4	; 164
+  76:	86 bf       	out	0x36, r24	; 54
+	//check at TWINT
+	while(!(TWCR&(1<<TWINT)));
+  78:	06 b6       	in	r0, 0x36	; 54
+  7a:	07 fe       	sbrs	r0, 7
+  7c:	fd cf       	rjmp	.-6      	; 0x78 <I2C_Start+0x4>
+	//chechk statues code srom data sheet 
+	while((TWSR&0xf8)!=0x08);																//mabd2yan 2wel 3 bit m4 mohemen f h3mel & m3 0xf8
+  7e:	81 b1       	in	r24, 0x01	; 1
+  80:	88 7f       	andi	r24, 0xF8	; 248
+  82:	88 30       	cpi	r24, 0x08	; 8
+  84:	e1 f7       	brne	.-8      	; 0x7e <I2C_Start+0xa>
+	
+}
+  86:	08 95       	ret
+
+00000088 <I2C_slave_addr>:
+void I2C_slave_addr(unsigned char addr)
+{
+	//Clear TWINT
+	TWCR=(1<<TWINT)|(1<<TWEN);
+  88:	94 e8       	ldi	r25, 0x84	; 132
+  8a:	96 bf       	out	0x36, r25	; 54
+	TWDR=addr;
+  8c:	83 b9       	out	0x03, r24	; 3
+	//check at TWINT
+	while(!(TWCR&(1<<TWINT)));
+  8e:	06 b6       	in	r0, 0x36	; 54
+  90:	07 fe       	sbrs	r0, 7
+  92:	fd cf       	rjmp	.-6      	; 0x8e <I2C_slave_addr+0x6>
+	//chechk statues code srom data sheet
+	while((TWSR&0xf8)!=0x18);
+  94:	81 b1       	in	r24, 0x01	; 1
+  96:	88 7f       	andi	r24, 0xF8	; 248
+  98:	88 31       	cpi	r24, 0x18	; 24
+  9a:	e1 f7       	brne	.-8      	; 0x94 <I2C_slave_addr+0xc>
+}
+  9c:	08 95       	ret
+
+0000009e <I2C_Send_data>:
+void I2C_Send_data(unsigned char data)
+{
+ //Clear TWINT&EN
+ TWCR=(1<<TWINT)|(1<<TWEN);
+  9e:	94 e8       	ldi	r25, 0x84	; 132
+  a0:	96 bf       	out	0x36, r25	; 54
+ //send data
+ TWDR=data; 
+  a2:	83 b9       	out	0x03, r24	; 3
+ //check at TWINT
+ while(!(TWCR&(1<<TWINT)));
+  a4:	06 b6       	in	r0, 0x36	; 54
+  a6:	07 fe       	sbrs	r0, 7
+  a8:	fd cf       	rjmp	.-6      	; 0xa4 <I2C_Send_data+0x6>
+ //chechk statues code srom data sheet
+ while((TWSR&0xf8)!=0x28);
+  aa:	81 b1       	in	r24, 0x01	; 1
+  ac:	88 7f       	andi	r24, 0xF8	; 248
+  ae:	88 32       	cpi	r24, 0x28	; 40
+  b0:	e1 f7       	brne	.-8      	; 0xaa <I2C_Send_data+0xc>
+}
+  b2:	08 95       	ret
+
+000000b4 <I2C_STOP>:
+void I2C_STOP()
+{
+	TWCR=(1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+  b4:	84 e9       	ldi	r24, 0x94	; 148
+  b6:	86 bf       	out	0x36, r24	; 54
+	//check at TWINT
+	while(!(TWCR&(1<<TWINT)));
+  b8:	06 b6       	in	r0, 0x36	; 54
+  ba:	07 fe       	sbrs	r0, 7
+  bc:	fd cf       	rjmp	.-6      	; 0xb8 <I2C_STOP+0x4>
+	
+}
+  be:	08 95       	ret
+
+000000c0 <main>:
+
+int main(void)
+{
+	DDRA&=~(1<<IN_PUT_PIN_0);
+  c0:	d0 98       	cbi	0x1a, 0	; 26
+	DDRA&=~(1<<IN_PUT_PIN_1);
+  c2:	d1 98       	cbi	0x1a, 1	; 26
+	DDRA&=~(1<<IN_PUT_PIN_2);
+  c4:	d2 98       	cbi	0x1a, 2	; 26
+	I2C_init();
+  c6:	0e 94 36 00 	call	0x6c	; 0x6c <I2C_init>
+    /* Replace with your application code */
+    while (1) 
+    {
+		I2C_Start();
+  ca:	0e 94 3a 00 	call	0x74	; 0x74 <I2C_Start>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+  ce:	2f ef       	ldi	r18, 0xFF	; 255
+  d0:	81 ee       	ldi	r24, 0xE1	; 225
+  d2:	94 e0       	ldi	r25, 0x04	; 4
+  d4:	21 50       	subi	r18, 0x01	; 1
+  d6:	80 40       	sbci	r24, 0x00	; 0
+  d8:	90 40       	sbci	r25, 0x00	; 0
+  da:	e1 f7       	brne	.-8      	; 0xd4 <main+0x14>
+  dc:	00 c0       	rjmp	.+0      	; 0xde <main+0x1e>
+  de:	00 00       	nop
+		_delay_ms(100);
+		I2C_slave_addr(0x20);									//2NA EL B7DED EL ADDR
+  e0:	80 e2       	ldi	r24, 0x20	; 32
+  e2:	0e 94 44 00 	call	0x88	; 0x88 <I2C_slave_addr>
+  e6:	2f ef       	ldi	r18, 0xFF	; 255
+  e8:	81 ee       	ldi	r24, 0xE1	; 225
+  ea:	94 e0       	ldi	r25, 0x04	; 4
+  ec:	21 50       	subi	r18, 0x01	; 1
+  ee:	80 40       	sbci	r24, 0x00	; 0
+  f0:	90 40       	sbci	r25, 0x00	; 0
+  f2:	e1 f7       	brne	.-8      	; 0xec <main+0x2c>
+  f4:	00 c0       	rjmp	.+0      	; 0xf6 <main+0x36>
+  f6:	00 00       	nop
+		_delay_ms(100);
+		 if(PINA&(1<<IN_PUT_PIN_0))
+  f8:	c8 9b       	sbis	0x19, 0	; 25
+  fa:	18 c0       	rjmp	.+48     	; 0x12c <main+0x6c>
+		{
+		    I2C_Send_data('A');										//SEND
+  fc:	81 e4       	ldi	r24, 0x41	; 65
+  fe:	0e 94 4f 00 	call	0x9e	; 0x9e <I2C_Send_data>
+ 102:	2f ef       	ldi	r18, 0xFF	; 255
+ 104:	81 ee       	ldi	r24, 0xE1	; 225
+ 106:	94 e0       	ldi	r25, 0x04	; 4
+ 108:	21 50       	subi	r18, 0x01	; 1
+ 10a:	80 40       	sbci	r24, 0x00	; 0
+ 10c:	90 40       	sbci	r25, 0x00	; 0
+ 10e:	e1 f7       	brne	.-8      	; 0x108 <main+0x48>
+ 110:	00 c0       	rjmp	.+0      	; 0x112 <main+0x52>
+ 112:	00 00       	nop
+		   _delay_ms(100);
+		    I2C_STOP();
+ 114:	0e 94 5a 00 	call	0xb4	; 0xb4 <I2C_STOP>
+ 118:	2f ef       	ldi	r18, 0xFF	; 255
+ 11a:	81 ee       	ldi	r24, 0xE1	; 225
+ 11c:	94 e0       	ldi	r25, 0x04	; 4
+ 11e:	21 50       	subi	r18, 0x01	; 1
+ 120:	80 40       	sbci	r24, 0x00	; 0
+ 122:	90 40       	sbci	r25, 0x00	; 0
+ 124:	e1 f7       	brne	.-8      	; 0x11e <main+0x5e>
+ 126:	00 c0       	rjmp	.+0      	; 0x128 <main+0x68>
+ 128:	00 00       	nop
+ 12a:	cf cf       	rjmp	.-98     	; 0xca <main+0xa>
+		   _delay_ms(100);
+		}
+		else if(PINA&(1<<IN_PUT_PIN_1))
+ 12c:	c9 9b       	sbis	0x19, 1	; 25
+ 12e:	18 c0       	rjmp	.+48     	; 0x160 <main+0xa0>
+		{
+
+			I2C_Send_data('B');										//SEND
+ 130:	82 e4       	ldi	r24, 0x42	; 66
+ 132:	0e 94 4f 00 	call	0x9e	; 0x9e <I2C_Send_data>
+ 136:	2f ef       	ldi	r18, 0xFF	; 255
+ 138:	81 ee       	ldi	r24, 0xE1	; 225
+ 13a:	94 e0       	ldi	r25, 0x04	; 4
+ 13c:	21 50       	subi	r18, 0x01	; 1
+ 13e:	80 40       	sbci	r24, 0x00	; 0
+ 140:	90 40       	sbci	r25, 0x00	; 0
+ 142:	e1 f7       	brne	.-8      	; 0x13c <main+0x7c>
+ 144:	00 c0       	rjmp	.+0      	; 0x146 <main+0x86>
+ 146:	00 00       	nop
+			_delay_ms(100);
+			I2C_STOP();
+ 148:	0e 94 5a 00 	call	0xb4	; 0xb4 <I2C_STOP>
+ 14c:	2f ef       	ldi	r18, 0xFF	; 255
+ 14e:	81 ee       	ldi	r24, 0xE1	; 225
+ 150:	94 e0       	ldi	r25, 0x04	; 4
+ 152:	21 50       	subi	r18, 0x01	; 1
+ 154:	80 40       	sbci	r24, 0x00	; 0
+ 156:	90 40       	sbci	r25, 0x00	; 0
+ 158:	e1 f7       	brne	.-8      	; 0x152 <main+0x92>
+ 15a:	00 c0       	rjmp	.+0      	; 0x15c <main+0x9c>
+ 15c:	00 00       	nop
+ 15e:	b5 cf       	rjmp	.-150    	; 0xca <main+0xa>
+			_delay_ms(100);
+		}
+		else if(PINA&(1<<IN_PUT_PIN_2))
+ 160:	ca 9b       	sbis	0x19, 2	; 25
+ 162:	b3 cf       	rjmp	.-154    	; 0xca <main+0xa>
+		{
+			
+			I2C_Send_data('C');										//SEND
+ 164:	83 e4       	ldi	r24, 0x43	; 67
+ 166:	0e 94 4f 00 	call	0x9e	; 0x9e <I2C_Send_data>
+ 16a:	2f ef       	ldi	r18, 0xFF	; 255
+ 16c:	81 ee       	ldi	r24, 0xE1	; 225
+ 16e:	94 e0       	ldi	r25, 0x04	; 4
+ 170:	21 50       	subi	r18, 0x01	; 1
+ 172:	80 40       	sbci	r24, 0x00	; 0
+ 174:	90 40       	sbci	r25, 0x00	; 0
+ 176:	e1 f7       	brne	.-8      	; 0x170 <main+0xb0>
+ 178:	00 c0       	rjmp	.+0      	; 0x17a <main+0xba>
+ 17a:	00 00       	nop
+			_delay_ms(100);
+			I2C_STOP();
+ 17c:	0e 94 5a 00 	call	0xb4	; 0xb4 <I2C_STOP>
+ 180:	2f ef       	ldi	r18, 0xFF	; 255
+ 182:	81 ee       	ldi	r24, 0xE1	; 225
+ 184:	94 e0       	ldi	r25, 0x04	; 4
+ 186:	21 50       	subi	r18, 0x01	; 1
+ 188:	80 40       	sbci	r24, 0x00	; 0
+ 18a:	90 40       	sbci	r25, 0x00	; 0
+ 18c:	e1 f7       	brne	.-8      	; 0x186 <main+0xc6>
+ 18e:	00 c0       	rjmp	.+0      	; 0x190 <main+0xd0>
+ 190:	00 00       	nop
+ 192:	9b cf       	rjmp	.-202    	; 0xca <main+0xa>
+
+00000194 <_exit>:
+ 194:	f8 94       	cli
+
+00000196 <__stop_program>:
+ 196:	ff cf       	rjmp	.-2      	; 0x196 <__stop_program>
